@@ -12,25 +12,31 @@ from homeassistant.components.climate.const import (
     FAN_FOCUS,
 )
 
-from .const import DOMAIN
+from .const import DOMAIN, DEFAULT_MIN_TEMP, DEFAULT_MAX_TEMP
 
 
 class ClimateInfraredConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     VERSION = 1
 
     async def async_step_user(self, user_input=None):
+        errors = {}
         if user_input is not None:
-            data = user_input.copy()
+            min_temp = user_input.get("min_temp", DEFAULT_MIN_TEMP)
+            max_temp = user_input.get("max_temp", DEFAULT_MAX_TEMP)
+            if min_temp > max_temp:
+                errors["base"] = "min_temp_gt_max_temp"
+            else:
+                data = user_input.copy()
 
-            # Normalize optional sensors
-            for k in ("temp_sensor", "power_sensor"):
-                if not data.get(k):
-                    data[k] = None
+                # Normalize optional sensors
+                for k in ("temp_sensor", "power_sensor"):
+                    if not data.get(k):
+                        data[k] = None
 
-            return self.async_create_entry(
-                title=data["name"],
-                data=data,
-            )
+                return self.async_create_entry(
+                    title=data["name"],
+                    data=data,
+                )
 
         schema = vol.Schema(
             {
@@ -91,7 +97,36 @@ class ClimateInfraredConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 ): selector.EntitySelector(
                     selector.EntitySelectorConfig(domain="binary_sensor")
                 ),
+
+                vol.Optional(
+                    "min_temp",
+                    default=DEFAULT_MIN_TEMP,
+                ): selector.NumberSelector(
+                    selector.NumberSelectorConfig(
+                        min=1,
+                        max=50,
+                        step=1,
+                        mode="box",
+                    )
+                ),
+
+                vol.Optional(
+                    "max_temp",
+                    default=DEFAULT_MAX_TEMP,
+                ): selector.NumberSelector(
+                    selector.NumberSelectorConfig(
+                        min=1,
+                        max=50,
+                        step=1,
+                        mode="box",
+                    )
+                ),
+
+                vol.Optional(
+                    "standalone_power_on",
+                    default=False,
+                ): selector.BooleanSelector(),
             }
         )
 
-        return self.async_show_form(step_id="user", data_schema=schema)
+        return self.async_show_form(step_id="user", data_schema=schema, errors=errors)

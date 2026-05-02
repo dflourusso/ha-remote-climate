@@ -16,6 +16,8 @@ from homeassistant.const import UnitOfTemperature
 from homeassistant.helpers.restore_state import RestoreEntity
 from homeassistant.helpers.event import async_track_state_change_event, async_call_later
 
+from .const import DEFAULT_MIN_TEMP, DEFAULT_MAX_TEMP
+
 _LOGGER = logging.getLogger(__name__)
 
 
@@ -29,6 +31,9 @@ class ClimateInfrared(ClimateEntity, RestoreEntity):
         self._remote = config.get("remote")
         self._sensor_temp = config.get("temp_sensor")
         self._sensor_power = config.get("power_sensor")
+        self._min_temp = int(config.get("min_temp", DEFAULT_MIN_TEMP))
+        self._max_temp = int(config.get("max_temp", DEFAULT_MAX_TEMP))
+        self._standalone_power_on = bool(config.get("standalone_power_on", False))
 
         self._hvac_mode = HVACMode.OFF
         self._fan_mode = FAN_AUTO
@@ -65,6 +70,9 @@ class ClimateInfrared(ClimateEntity, RestoreEntity):
                 self._fan_mode = last.attributes.get("fan_mode", FAN_AUTO)
             except Exception:
                 self._hvac_mode = HVACMode.OFF
+        self._target_temperature = int(
+            max(self._min_temp, min(self._max_temp, int(self._target_temperature)))
+        )
 
         # Esperar HA estabilizar
         await asyncio.sleep(2)
@@ -119,6 +127,14 @@ class ClimateInfrared(ClimateEntity, RestoreEntity):
     @property
     def target_temperature_step(self):
         return 1
+
+    @property
+    def min_temp(self):
+        return self._min_temp
+
+    @property
+    def max_temp(self):
+        return self._max_temp
 
     @property
     def current_temperature(self):
@@ -199,17 +215,26 @@ class ClimateInfrared(ClimateEntity, RestoreEntity):
         if hvac_mode == self._hvac_mode:
             return
 
+        prev_mode = self._hvac_mode
         self._hvac_mode = hvac_mode
 
         if hvac_mode == HVACMode.OFF:
             await self._send("off")
         else:
+            if (
+                self._standalone_power_on
+                and prev_mode == HVACMode.OFF
+                and hvac_mode != HVACMode.OFF
+            ):
+                await self._send("on")
+                await asyncio.sleep(0.8)
             await self._send_combined()
 
         self.async_write_ha_state()
 
     async def async_set_temperature(self, **kwargs):
         temp = int(kwargs.get("temperature"))
+        temp = max(self._min_temp, min(self._max_temp, temp))
 
         if temp == self._target_temperature:
             return
