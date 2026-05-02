@@ -10,10 +10,16 @@
           "hvac_modes": "Modos disponíveis",
           "fan_modes": "Velocidades do ventilador",
           "temp_sensor": "Sensor de temperatura",
-          "power_sensor": "Sensor ligado/desligado"
+          "power_sensor": "Sensor ligado/desligado",
+          "min_temp": "Temperatura mínima",
+          "max_temp": "Temperatura máxima",
+          "standalone_power_on": "Enviar comando de ligar antes de mudar o modo"
         }
       }
     }
+  },
+  "error": {
+    "min_temp_gt_max_temp": "A temperatura mínima deve ser menor ou igual à temperatura máxima."
   },
   "options": {
     "step": {
@@ -23,7 +29,10 @@
           "hvac_modes": "Modos disponíveis",
           "fan_modes": "Velocidades do ventilador",
           "temp_sensor": "Sensor de temperatura",
-          "power_sensor": "Sensor de ligado/desligado"
+          "power_sensor": "Sensor de ligado/desligado",
+          "min_temp": "Temperatura mínima",
+          "max_temp": "Temperatura máxima",
+          "standalone_power_on": "Enviar comando de ligar antes de mudar o modo"
         }
       }
     }

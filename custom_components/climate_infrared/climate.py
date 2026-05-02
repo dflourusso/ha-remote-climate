@@ -227,7 +227,7 @@ class ClimateInfrared(ClimateEntity, RestoreEntity):
                 and hvac_mode != HVACMode.OFF
             ):
                 await self._send("on")
-                await asyncio.sleep(0.8)
+                await asyncio.sleep(1.5)
             await self._send_combined()
 
         self.async_write_ha_state()

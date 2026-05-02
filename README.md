@@ -74,6 +74,9 @@ Após instalar:
 |--------|-----------|
 | Temp Sensor | Sensor de temperatura real |
 | Power Sensor | Sensor que indica se o ar está ligado (porta, consumo, relay, etc) |
+| Min Temp | Temperatura mínima permitida (limita o slider e os comandos enviados) |
+| Max Temp | Temperatura máxima permitida (limita o slider e os comandos enviados) |
+| Standalone Power On | Alguns LG precisam de um comando `on` separado antes de mudar modo/temperatura/ventilador |
 
 ---
 

@@ -10,10 +10,16 @@
           "hvac_modes": "Available modes",
           "fan_modes": "Fan speeds",
           "temp_sensor": "Temperature sensor",
-          "power_sensor": "Power / door sensor"
+          "power_sensor": "Power / door sensor",
+          "min_temp": "Minimum temperature",
+          "max_temp": "Maximum temperature",
+          "standalone_power_on": "Send standalone power on before mode changes"
         }
       }
     }
+  },
+  "error": {
+    "min_temp_gt_max_temp": "Minimum temperature must be less than or equal to maximum temperature."
   },
   "options": {
     "step": {
@@ -23,7 +29,10 @@
           "hvac_modes": "Available modes",
           "fan_modes": "Fan speeds",
           "temp_sensor": "Temperature sensor",
-          "power_sensor": "Power / door sensor"
+          "power_sensor": "Power / door sensor",
+          "min_temp": "Minimum temperature",
+          "max_temp": "Maximum temperature",
+          "standalone_power_on": "Send standalone power on before mode changes"
         }
       }
     }
