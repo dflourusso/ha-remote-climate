@@ -16,10 +16,10 @@
           "standalone_power_on": "Enviar comando de ligar antes de mudar o modo"
         }
       }
+    },
+    "error": {
+      "min_temp_gt_max_temp": "A temperatura mínima deve ser menor ou igual à temperatura máxima."
     }
-  },
-  "error": {
-    "min_temp_gt_max_temp": "A temperatura mínima deve ser menor ou igual à temperatura máxima."
   },
   "options": {
     "step": {

@@ -16,10 +16,10 @@
           "standalone_power_on": "Send standalone power on before mode changes"
         }
       }
+    },
+    "error": {
+      "min_temp_gt_max_temp": "Minimum temperature must be less than or equal to maximum temperature."
     }
-  },
-  "error": {
-    "min_temp_gt_max_temp": "Minimum temperature must be less than or equal to maximum temperature."
   },
   "options": {
     "step": {
