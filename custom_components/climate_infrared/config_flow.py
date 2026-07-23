@@ -29,7 +29,7 @@ class ClimateInfraredConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 data = user_input.copy()
 
                 # Normalize optional sensors
-                for k in ("temp_sensor", "power_sensor"):
+                for k in ("temp_sensor", "humidity_sensor", "power_sensor"):
                     if not data.get(k):
                         data[k] = None
 
@@ -86,6 +86,13 @@ class ClimateInfraredConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 # Optional sensors
                 vol.Optional(
                     "temp_sensor",
+                    default=UNDEFINED,
+                ): selector.EntitySelector(
+                    selector.EntitySelectorConfig(domain="sensor")
+                ),
+
+                vol.Optional(
+                    "humidity_sensor",
                     default=UNDEFINED,
                 ): selector.EntitySelector(
                     selector.EntitySelectorConfig(domain="sensor")

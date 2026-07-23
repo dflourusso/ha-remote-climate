@@ -30,6 +30,7 @@ class ClimateInfrared(ClimateEntity, RestoreEntity):
         self._controller = config.get("controller")
         self._remote = config.get("remote")
         self._sensor_temp = config.get("temp_sensor")
+        self._sensor_humidity = config.get("humidity_sensor")
         self._sensor_power = config.get("power_sensor")
         self._min_temp = int(config.get("min_temp", DEFAULT_MIN_TEMP))
         self._max_temp = int(config.get("max_temp", DEFAULT_MAX_TEMP))
@@ -108,6 +109,20 @@ class ClimateInfrared(ClimateEntity, RestoreEntity):
                 )
             )
 
+        # --- MONITOR HUMIDITY SENSOR ---
+        if self._sensor_humidity:
+
+            async def humidity_changed(event):
+                self.async_write_ha_state()
+
+            self.async_on_remove(
+                async_track_state_change_event(
+                    self.hass,
+                    [self._sensor_humidity],
+                    humidity_changed,
+                )
+            )
+
     # --------------------------------------------------
     # PROPRIEDADES
     # --------------------------------------------------
@@ -142,6 +157,18 @@ class ClimateInfrared(ClimateEntity, RestoreEntity):
             return None
 
         s = self.hass.states.get(self._sensor_temp)
+        if s:
+            try:
+                return float(s.state)
+            except Exception:
+                return None
+
+    @property
+    def current_humidity(self):
+        if not self._sensor_humidity:
+            return None
+
+        s = self.hass.states.get(self._sensor_humidity)
         if s:
             try:
                 return float(s.state)
