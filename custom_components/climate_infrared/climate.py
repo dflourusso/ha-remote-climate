@@ -175,7 +175,7 @@ class ClimateInfrared(ClimateEntity, RestoreEntity):
                 ClimateEntityFeature.TARGET_TEMPERATURE
                 | ClimateEntityFeature.FAN_MODE
             )
-        if self._swing_enabled:
+        if self._swing_enabled and self._hvac_mode != HVACMode.OFF:
             features |= ClimateEntityFeature.SWING_MODE
         return features
 
