@@ -110,6 +110,13 @@ Mudar a temperatura em `fan_only`, `dry` ou `off` só atualiza o valor guardado.
 
 Códigos para gravar no remote: o mapa completo de frio, quente e auto; uma chave `fan_only_` por velocidade usada; uma chave `dry`.
 
+O swing das aletas é um comando separado, só ligado ou desligado. Ele não entra em `cool_auto_24` nem nos outros modos. Com o campo de oscilar ligado na configuração, a janela de detalhes mostra Ligado e Desligado:
+
+```
+swing_on
+swing_off
+```
+
 👉 Cada chave precisa existir no seu `remote` (Broadlink, ESPHome, QA, etc).
 
 ---
@@ -177,6 +184,7 @@ Você pode editar:
 - Sensores
 - Temperatura mínima e máxima
 - Comando de ligar separado
+- Oscilar aletas
 
 Nome, controle IR e nome do dispositivo ficam como foram definidos na criação.
 
@@ -194,7 +202,6 @@ Testado com:
 - Não aprende códigos IR (use Broadlink/ESPHome)
 - Não detecta temperatura alvo real do AC (IR é unidirecional)
 - Power sensor é apenas heurístico
-- Não suporta swing (ainda)
 
 
 # 👨‍💻 Autor

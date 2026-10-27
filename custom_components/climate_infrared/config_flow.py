@@ -43,6 +43,7 @@ def _normalize_config(data):
     for key in ("min_temp", "max_temp"):
         if normalized.get(key) is not None:
             normalized[key] = int(normalized[key])
+    normalized["swing"] = bool(normalized.get("swing", False))
     return normalized
 
 
@@ -134,6 +135,10 @@ def _options_schema(current):
             vol.Required(
                 "standalone_power_on",
                 default=bool(_stored(current, "standalone_power_on", False)),
+            ): selector.BooleanSelector(),
+            vol.Required(
+                "swing",
+                default=bool(_stored(current, "swing", False)),
             ): selector.BooleanSelector(),
         }
     )

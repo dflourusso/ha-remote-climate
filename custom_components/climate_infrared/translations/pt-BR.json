@@ -23,7 +23,8 @@
           "power_sensor": "Sensor ligado/desligado",
           "min_temp": "Temperatura mínima",
           "max_temp": "Temperatura máxima",
-          "standalone_power_on": "Enviar comando de ligar antes de mudar o modo"
+          "standalone_power_on": "Enviar comando de ligar antes de mudar o modo",
+          "swing": "Oscilar aletas"
         }
       }
     },
@@ -43,7 +44,8 @@
           "power_sensor": "Sensor de ligado/desligado",
           "min_temp": "Temperatura mínima",
           "max_temp": "Temperatura máxima",
-          "standalone_power_on": "Enviar comando de ligar antes de mudar o modo"
+          "standalone_power_on": "Enviar comando de ligar antes de mudar o modo",
+          "swing": "Oscilar aletas"
         }
       }
     },

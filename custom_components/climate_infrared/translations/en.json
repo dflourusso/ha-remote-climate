@@ -14,7 +14,8 @@
           "power_sensor": "Power / door sensor",
           "min_temp": "Minimum temperature",
           "max_temp": "Maximum temperature",
-          "standalone_power_on": "Send standalone power on before mode changes"
+          "standalone_power_on": "Send standalone power on before mode changes",
+          "swing": "Swing vanes"
         }
       }
     },
@@ -34,7 +35,8 @@
           "power_sensor": "Power / door sensor",
           "min_temp": "Minimum temperature",
           "max_temp": "Maximum temperature",
-          "standalone_power_on": "Send standalone power on before mode changes"
+          "standalone_power_on": "Send standalone power on before mode changes",
+          "swing": "Swing vanes"
         }
       }
     },

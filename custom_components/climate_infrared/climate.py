@@ -11,6 +11,8 @@ from homeassistant.components.climate.const import (
     FAN_HIGH,
     FAN_AUTO,
     FAN_FOCUS,
+    SWING_OFF,
+    SWING_ON,
 )
 from homeassistant.const import UnitOfTemperature
 from homeassistant.helpers.restore_state import RestoreEntity
@@ -51,11 +53,13 @@ class ClimateInfrared(ClimateEntity, RestoreEntity):
         self._min_temp = int(config.get("min_temp", DEFAULT_MIN_TEMP))
         self._max_temp = int(config.get("max_temp", DEFAULT_MAX_TEMP))
         self._standalone_power_on = bool(config.get("standalone_power_on", False))
+        self._swing_enabled = bool(config.get("swing", False))
 
         self._hvac_mode = HVACMode.OFF
         self._last_hvac_mode = HVACMode.COOL
         self._fan_mode = FAN_AUTO
         self._target_temperature = 24
+        self._swing_mode = SWING_OFF
 
         # Proteções contra loop
         self._booting = True
@@ -84,6 +88,10 @@ class ClimateInfrared(ClimateEntity, RestoreEntity):
                 self._fan_mode = last.attributes.get("fan_mode", FAN_AUTO)
             except Exception:
                 self._hvac_mode = HVACMode.OFF
+
+            saved_swing = last.attributes.get("swing_mode")
+            if saved_swing in (SWING_ON, SWING_OFF):
+                self._swing_mode = saved_swing
 
             if self._hvac_mode != HVACMode.OFF:
                 self._last_hvac_mode = self._hvac_mode
@@ -167,6 +175,8 @@ class ClimateInfrared(ClimateEntity, RestoreEntity):
                 ClimateEntityFeature.TARGET_TEMPERATURE
                 | ClimateEntityFeature.FAN_MODE
             )
+        if self._swing_enabled:
+            features |= ClimateEntityFeature.SWING_MODE
         return features
 
     @property
@@ -182,6 +192,16 @@ class ClimateInfrared(ClimateEntity, RestoreEntity):
     @property
     def target_temperature(self):
         return self._target_temperature
+
+    @property
+    def swing_mode(self):
+        return self._swing_mode if self._swing_enabled else None
+
+    @property
+    def swing_modes(self):
+        if not self._swing_enabled:
+            return None
+        return [SWING_OFF, SWING_ON]
 
     @property
     def target_temperature_step(self):
@@ -354,6 +374,18 @@ class ClimateInfrared(ClimateEntity, RestoreEntity):
 
         if self._uses_fan():
             await self._send_combined()
+        self.async_write_ha_state()
+
+    async def async_set_swing_mode(self, swing_mode):
+        if (
+            not self._swing_enabled
+            or swing_mode not in (SWING_ON, SWING_OFF)
+            or swing_mode == self._swing_mode
+        ):
+            return
+
+        self._swing_mode = swing_mode
+        await self._send(f"swing_{swing_mode}")
         self.async_write_ha_state()
 
     # --------------------------------------------------
