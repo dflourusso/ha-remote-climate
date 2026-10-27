@@ -20,6 +20,22 @@ from .const import DEFAULT_MIN_TEMP, DEFAULT_MAX_TEMP
 
 _LOGGER = logging.getLogger(__name__)
 
+_FAN_KEYS = {
+    FAN_LOW: "low",
+    FAN_MEDIUM: "medium",
+    FAN_HIGH: "high",
+    FAN_AUTO: "auto",
+    FAN_FOCUS: "focus",
+}
+
+_MODES_WITH_TEMPERATURE = (HVACMode.COOL, HVACMode.HEAT, HVACMode.AUTO)
+_MODES_WITH_FAN = (
+    HVACMode.COOL,
+    HVACMode.HEAT,
+    HVACMode.AUTO,
+    HVACMode.FAN_ONLY,
+)
+
 
 class ClimateInfrared(ClimateEntity, RestoreEntity):
 
@@ -49,13 +65,6 @@ class ClimateInfrared(ClimateEntity, RestoreEntity):
         self._attr_name = self._name
         self._attr_unique_id = f"climate_ir_{self._name}"
         self._attr_temperature_unit = UnitOfTemperature.CELSIUS
-
-        self._attr_supported_features = (
-            ClimateEntityFeature.TARGET_TEMPERATURE |
-            ClimateEntityFeature.FAN_MODE |
-            ClimateEntityFeature.TURN_ON |
-            ClimateEntityFeature.TURN_OFF
-        )
 
         self._attr_hvac_modes = config.get("hvac_modes", [])
         self._attr_fan_modes = config.get("fan_modes", [])
@@ -146,6 +155,18 @@ class ClimateInfrared(ClimateEntity, RestoreEntity):
     @property
     def hvac_mode(self):
         return self._hvac_mode
+
+    @property
+    def supported_features(self):
+        features = ClimateEntityFeature.TURN_ON | ClimateEntityFeature.TURN_OFF
+        if self._hvac_mode == HVACMode.FAN_ONLY:
+            features |= ClimateEntityFeature.FAN_MODE
+        elif self._hvac_mode in _MODES_WITH_TEMPERATURE:
+            features |= (
+                ClimateEntityFeature.TARGET_TEMPERATURE
+                | ClimateEntityFeature.FAN_MODE
+            )
+        return features
 
     @property
     def extra_state_attributes(self):
@@ -320,7 +341,8 @@ class ClimateInfrared(ClimateEntity, RestoreEntity):
 
         self._target_temperature = temp
 
-        await self._send_combined()
+        if self._uses_temperature():
+            await self._send_combined()
         self.async_write_ha_state()
 
     async def async_set_fan_mode(self, fan_mode):
@@ -329,29 +351,38 @@ class ClimateInfrared(ClimateEntity, RestoreEntity):
 
         self._fan_mode = fan_mode
 
-        await self._send_combined()
+        if self._uses_fan():
+            await self._send_combined()
         self.async_write_ha_state()
 
     # --------------------------------------------------
     # MONTAGEM DO COMANDO IR
     # --------------------------------------------------
 
-    async def _send_combined(self):
+    def _uses_temperature(self):
+        return self._hvac_mode in _MODES_WITH_TEMPERATURE
+
+    def _uses_fan(self):
+        return self._hvac_mode in _MODES_WITH_FAN
+
+    def _fan_key(self):
+        return _FAN_KEYS.get(self._fan_mode, "auto")
+
+    def _command_key(self):
         if self._hvac_mode == HVACMode.OFF:
-            key = "off"
-        else:
-            fan = {
-                FAN_LOW: "low",
-                FAN_MEDIUM: "medium",
-                FAN_HIGH: "high",
-                FAN_AUTO: "auto",
-                FAN_FOCUS: "focus",
-            }.get(self._fan_mode, "auto")
+            return "off"
+        if self._hvac_mode == HVACMode.DRY:
+            return "dry"
 
-            mode = self._hvac_mode.value.lower()
-            key = f"{mode}_{fan}_{self._target_temperature}"
+        fan = self._fan_key()
+        if self._hvac_mode == HVACMode.FAN_ONLY:
+            return f"fan_only_{fan}"
 
-        await self._send(key)
+        mode = self._hvac_mode.value.lower()
+        return f"{mode}_{fan}_{int(self._target_temperature)}"
+
+    async def _send_combined(self):
+        await self._send(self._command_key())
 
     # --------------------------------------------------
     # ENVIO REAL PARA CONTROLE IR

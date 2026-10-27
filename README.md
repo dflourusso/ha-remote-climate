@@ -8,7 +8,7 @@ Integração customizada para controlar **ar-condicionado via infravermelho (IR)
 
 
 Ela simula um `climate` real, com suporte a:
-- Modos HVAC (cool, heat, dry, fan, auto, off)
+- Modos HVAC (cool, heat, dry, fan_only, auto, off)
 - `turn_on` / `turn_off` (restaura o último modo ativo)
 - Velocidade do ventilador
 - Temperatura alvo
@@ -21,7 +21,7 @@ Ela simula um `climate` real, com suporte a:
 
 # ✨ Recursos
 
-- Controle IR baseado em padrões (`cool_auto_24`, `heat_low_20`, etc)
+- Controle IR por modo (`cool_auto_24`, `heat_low_20`, `fan_only_low`, `dry`)
 - Compatível com **Broadlink, ESPHome, Zigbee IR, MQTT IR**
 - Sensores externos opcionais:
   - Temperatura real
@@ -85,20 +85,32 @@ Após instalar:
 
 # 🧠 Padrão de Comandos IR
 
-A integração espera comandos no formato: `{mode}{fan}{temperature}`
+O comando depende do modo. Temperatura e velocidade continuam guardadas mesmo quando o modo atual não as envia. Ao voltar para frio, quente ou auto, o IR usa esses valores de novo.
 
+| Modo | Comando |
+|------|---------|
+| off | `off` |
+| cool, heat, auto | `{modo}_{velocidade}_{temperatura}` |
+| fan_only | `fan_only_{velocidade}` |
+| dry | `dry` |
 
 Exemplos:
 ```
 cool_auto_24
 cool_low_23
 heat_high_26
-fan_only_medium_23
-dry_auto_22
+fan_only_medium
+dry
 off
 ```
 
-👉 Isso deve existir no seu `remote` (Broadlink, ESPHome, QA, etc).
+No card, a temperatura aparece em frio, quente e auto. A velocidade aparece nesses modos e em `fan_only`. Em `dry` e `off` os dois ficam ocultos.
+
+Mudar a temperatura em `fan_only`, `dry` ou `off` só atualiza o valor guardado. Mudar a velocidade em `dry` ou `off` faz o mesmo. O infravermelho sai na hora quando o campo vale para o modo atual.
+
+Códigos para gravar no remote: o mapa completo de frio, quente e auto; uma chave `fan_only_` por velocidade usada; uma chave `dry`.
+
+👉 Cada chave precisa existir no seu `remote` (Broadlink, ESPHome, QA, etc).
 
 ---
 
@@ -160,11 +172,13 @@ Após criado:
 - Clique em Configurar
 
 Você pode editar:
-- Controller
-- Remote
-- HVAC modes
+- HVAC modes, inclusive `dry` e `fan_only`
 - Fan modes
 - Sensores
+- Temperatura mínima e máxima
+- Comando de ligar separado
+
+Nome, controle IR e nome do dispositivo ficam como foram definidos na criação.
 
 # 🧩 Compatibilidade
 
