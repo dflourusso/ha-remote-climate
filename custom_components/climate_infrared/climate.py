@@ -64,6 +64,7 @@ class ClimateInfrared(ClimateEntity, RestoreEntity):
 
         self._attr_name = self._name
         self._attr_unique_id = f"climate_ir_{self._name}"
+        self._attr_translation_key = "infrared"
         self._attr_temperature_unit = UnitOfTemperature.CELSIUS
 
         self._attr_hvac_modes = config.get("hvac_modes", [])

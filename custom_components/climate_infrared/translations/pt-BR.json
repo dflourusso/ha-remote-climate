@@ -1,4 +1,13 @@
 {
+  "entity": {
+    "climate": {
+      "infrared": {
+        "state": {
+          "fan_only": "Ventilar"
+        }
+      }
+    }
+  },
   "config": {
     "step": {
       "user": {
