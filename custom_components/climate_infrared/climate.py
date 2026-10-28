@@ -170,12 +170,15 @@ class ClimateInfrared(ClimateEntity, RestoreEntity):
         features = ClimateEntityFeature.TURN_ON | ClimateEntityFeature.TURN_OFF
         if self._hvac_mode == HVACMode.FAN_ONLY:
             features |= ClimateEntityFeature.FAN_MODE
-        elif self._hvac_mode in _MODES_WITH_TEMPERATURE:
+        elif (
+            self._hvac_mode == HVACMode.OFF
+            or self._hvac_mode in _MODES_WITH_TEMPERATURE
+        ):
             features |= (
                 ClimateEntityFeature.TARGET_TEMPERATURE
                 | ClimateEntityFeature.FAN_MODE
             )
-        if self._swing_enabled and self._hvac_mode != HVACMode.OFF:
+        if self._swing_enabled:
             features |= ClimateEntityFeature.SWING_MODE
         return features
 
@@ -385,7 +388,8 @@ class ClimateInfrared(ClimateEntity, RestoreEntity):
             return
 
         self._swing_mode = swing_mode
-        await self._send(f"swing_{swing_mode}")
+        if self._hvac_mode != HVACMode.OFF:
+            await self._send(f"swing_{swing_mode}")
         self.async_write_ha_state()
 
     # --------------------------------------------------

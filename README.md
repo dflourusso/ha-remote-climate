@@ -104,13 +104,13 @@ dry
 off
 ```
 
-No card, a temperatura aparece em frio, quente e auto. A velocidade aparece nesses modos e em `fan_only`. Em `dry` e `off` os dois ficam ocultos.
+No card, a temperatura aparece em frio, quente, auto e desligado. A velocidade aparece nesses modos, em `fan_only` e desligado. Em `dry` os dois ficam ocultos.
 
 Mudar a temperatura em `fan_only`, `dry` ou `off` só atualiza o valor guardado. Mudar a velocidade em `dry` ou `off` faz o mesmo. O infravermelho sai na hora quando o campo vale para o modo atual.
 
 Códigos para gravar no remote: o mapa completo de frio, quente e auto; uma chave `fan_only_` por velocidade usada; uma chave `dry`.
 
-O swing das aletas é um comando separado, só ligado ou desligado. Ele não entra em `cool_auto_24` nem nos outros modos. Com o campo de oscilar ligado na configuração, a janela de detalhes mostra Ligado e Desligado:
+O swing das aletas é um comando separado, só ligado ou desligado. Ele não entra em `cool_auto_24` nem nos outros modos. Com o campo de oscilar ligado na configuração, a lista fica visível também com o ar desligado. Nesse estado a escolha só fica guardada. Ligar o ar não reenvia o swing. A janela de detalhes mostra Ligado e Desligado:
 
 ```
 swing_on
